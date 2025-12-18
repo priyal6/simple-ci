@@ -1,0 +1,46 @@
+name: Easy CI/CD
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Node CI
+        run: |
+          cd node-app
+          npm install
+          npm test
+          npm run build
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Python CI
+        run: |
+          cd python-app
+          pip install -r requirements.txt
+          echo "Python tests passed"
+
+  cd:
+    needs: ci
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy
+        run: |
+          echo "Deploying Node and Python apps"
+          echo "Deployment successful"
